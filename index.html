@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Tesorería · Reporte a Socios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0d10; --bg-2:#13151a; --bg-3:#1a1d24; --bg-elev:#1f232c;
+  --border:#262a33; --border-2:#2f343f;
+  --txt:#e8eaef; --txt-2:#9aa0ac; --txt-3:#6b7280;
+  --pos:#4ade80; --neg:#f87171; --warn:#fbbf24;
+  --accent:#d4a574;
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Geist','Helvetica Neue',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body{min-height:100vh;background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(212,165,116,0.06),transparent),radial-gradient(ellipse 60% 40% at 50% 100%,rgba(74,222,128,0.03),transparent)}
+.shell{max-width:1240px;margin:0 auto;padding:32px 28px 80px}
+
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--border);margin-bottom:32px}
+.hdr-brand{display:flex;flex-direction:column;gap:6px}
+.hdr-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.18em;color:var(--accent);text-transform:uppercase;font-weight:500}
+.hdr-title{font-family:var(--serif);font-size:38px;font-weight:400;letter-spacing:-0.02em;line-height:1.05;font-style:italic}
+.hdr-title em{font-style:normal;color:var(--accent);font-weight:300}
+.hdr-sub{font-size:14px;color:var(--txt-2);margin-top:6px;max-width:520px;line-height:1.5}
+.hdr-meta{text-align:right;font-family:var(--mono);font-size:11px;color:var(--txt-3);text-transform:uppercase;letter-spacing:0.08em;line-height:1.7}
+.hdr-meta strong{color:var(--txt);font-weight:500}
+.hdr-meta .pulse{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pos);margin-right:6px;box-shadow:0 0 8px var(--pos);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.refresh-btn{margin-top:10px;background:var(--bg-3);border:1px solid var(--border);color:var(--txt-2);padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:10px;letter-spacing:0.08em;cursor:pointer;transition:all .15s}
+.refresh-btn:hover{background:var(--bg-elev);color:var(--txt);border-color:var(--border-2)}
+.refresh-btn.spinning{pointer-events:none;opacity:0.6}
+
+.state{padding:80px 24px;text-align:center;background:var(--bg-2);border:1px solid var(--border);border-radius:14px}
+.state.error{border-color:var(--neg);background:rgba(248,113,113,0.04)}
+.state h3{font-family:var(--serif);font-size:24px;font-weight:400;font-style:italic;margin-bottom:10px}
+.state p{color:var(--txt-2);font-size:14px;max-width:520px;margin:0 auto;line-height:1.6}
+.state.error h3{color:var(--neg);font-style:normal}
+.state code{background:var(--bg-3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:12px;color:var(--accent)}
+.dots::after{content:'';animation:dots 1.5s infinite}
+@keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
+
+.kpis{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px;margin-bottom:32px}
+.kpi{padding:24px;background:var(--bg-2);border:1px solid var(--border);border-radius:14px;position:relative;overflow:hidden}
+.kpi.featured{background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border-color:var(--border-2)}
+.kpi.featured::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.kpi-label{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--txt-3);margin-bottom:14px}
+.kpi-value{font-family:var(--serif);font-size:36px;font-weight:400;letter-spacing:-0.025em;line-height:1.05;color:var(--txt);font-variant-numeric:tabular-nums}
+.kpi.featured .kpi-value{font-size:44px}
+.kpi-value.pos{color:var(--pos)}
+.kpi-value.neg{color:var(--neg)}
+.kpi-sub{font-size:12px;color:var(--txt-2);margin-top:10px;line-height:1.5}
+.kpi-sub strong{color:var(--txt);font-weight:500}
+
+.section{margin-bottom:36px}
+.section-hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.section-hdr h2{font-family:var(--serif);font-size:24px;font-weight:400;font-style:italic;letter-spacing:-0.01em}
+.section-hdr h2 em{font-style:normal;color:var(--accent)}
+.section-hdr .meta{font-family:var(--mono);font-size:11px;color:var(--txt-3);letter-spacing:0.08em;text-transform:uppercase}
+
+.cuentas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.cuenta{padding:18px;background:var(--bg-2);border:1px solid var(--border);border-radius:10px;transition:all .2s;border-left:2px solid var(--border-2)}
+.cuenta:hover{border-color:var(--border-2);background:var(--bg-3)}
+.cuenta.tipo-banco{border-left-color:var(--pos)}
+.cuenta.tipo-efectivo{border-left-color:var(--accent)}
+.cuenta.tipo-cobrar{border-left-color:var(--warn)}
+.cuenta.tipo-deuda{border-left-color:var(--neg)}
+.cuenta-nombre{font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt-3);margin-bottom:10px;line-height:1.3}
+.cuenta-monto{font-family:var(--serif);font-size:22px;font-weight:400;letter-spacing:-0.015em;font-variant-numeric:tabular-nums;color:var(--txt)}
+.cuenta-monto.pos{color:var(--pos)}
+.cuenta-monto.neg{color:var(--neg)}
+.cuenta-monto.zero{color:var(--txt-3)}
+
+.tabla-wrap{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+table thead{background:var(--bg-3)}
+table th{padding:14px 18px;text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;color:var(--txt-3);border-bottom:1px solid var(--border);white-space:nowrap}
+table th.num{text-align:right}
+table td{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13.5px}
+table td.num{text-align:right;font-family:var(--mono);font-weight:500;white-space:nowrap}
+table tbody tr{transition:background .15s}
+table tbody tr:hover{background:var(--bg-3)}
+table tbody tr:last-child td{border-bottom:none}
+.fecha{font-family:var(--mono);font-size:12px;color:var(--txt-2);font-weight:500;white-space:nowrap}
+.concepto{font-weight:500;color:var(--txt)}
+.monto{color:var(--neg)}
+.saldo{font-weight:600}
+.saldo.pos{color:var(--pos)}
+.saldo.neg{color:var(--neg)}
+tr.alert{background:rgba(248,113,113,0.04)}
+tr.alert .concepto::before{content:"●";color:var(--neg);margin-right:8px;font-size:10px;vertical-align:middle}
+tr.divider td{background:var(--bg-3);padding:8px 18px;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);border-top:1px solid var(--border)}
+
+.tarjetas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tarjeta-card{padding:22px;background:linear-gradient(135deg,var(--bg-2),var(--bg-3));border:1px solid var(--border);border-radius:14px;position:relative;overflow:hidden}
+.tarjeta-card::after{content:"";position:absolute;top:-30px;right:-30px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(212,165,116,0.12),transparent 70%)}
+.tarjeta-tipo{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--txt-3);margin-bottom:14px;position:relative;z-index:1}
+.tarjeta-monto{font-family:var(--serif);font-size:26px;font-weight:400;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.tarjeta-vto{font-family:var(--mono);font-size:11px;color:var(--accent);margin-top:8px;position:relative;z-index:1}
+
+.empty{font-size:13px;color:var(--txt-3);font-style:italic;text-align:center;padding:32px 0}
+
+.chart-wrap{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;padding:24px}
+.chart-canvas{width:100%;height:320px;display:block}
+
+.footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--txt-3);letter-spacing:0.05em;flex-wrap:wrap;gap:10px}
+.footer .accent{color:var(--accent)}
+
+@media (max-width:900px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi.featured{grid-column:1/-1}
+  .hdr{flex-direction:column}
+  .hdr-meta{text-align:left}
+  .shell{padding:20px 16px 60px}
+  .hdr-title{font-size:28px}
+}
+@media (max-width:560px){
+  .kpis{grid-template-columns:1fr}
+  table td,table th{padding:10px 12px;font-size:12px}
+  .fecha{font-size:11px}
+}
+
+.fade-in{animation:fadeIn .4s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.stagger>*{opacity:0;animation:fadeIn .4s ease forwards}
+.stagger>*:nth-child(1){animation-delay:.05s}
+.stagger>*:nth-child(2){animation-delay:.1s}
+.stagger>*:nth-child(3){animation-delay:.15s}
+.stagger>*:nth-child(4){animation-delay:.2s}
+.stagger>*:nth-child(5){animation-delay:.25s}
+.stagger>*:nth-child(6){animation-delay:.3s}
+.stagger>*:nth-child(7){animation-delay:.35s}
+.stagger>*:nth-child(8){animation-delay:.4s}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<header class="hdr">
+  <div class="hdr-brand">
+    <span class="hdr-eyebrow">Reporte interno — Socios</span>
+    <h1 class="hdr-title">Estado de <em>Tesorería</em></h1>
+    <p class="hdr-sub">La plata que tenemos hoy y los compromisos de los próximos días. Datos en vivo desde la planilla.</p>
+  </div>
+  <div class="hdr-meta">
+    <div><span class="pulse"></span>EN VIVO</div>
+    <div>Hoy: <strong id="meta-hoy">—</strong></div>
+    <div>Actualizado: <strong id="meta-actualizado">—</strong></div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadData()">↻ Refrescar</button>
+  </div>
+</header>
+
+<div id="content">
+  <div class="state">
+    <h3>Cargando datos<span class="dots"></span></h3>
+    <p>Leyendo la planilla.</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>Documento confidencial · Uso exclusivo de socios</span>
+  <span class="accent">Datos en vivo desde Google Sheets</span>
+</footer>
+
+</div>
+
+<script>
+/* ===============================================================
+   CONFIGURACIÓN — REEMPLAZAR EL SHEET_ID POR EL TUYO
+   =============================================================== */
+const SHEET_ID = "1RHF09GRX8i2d_gI3vuUgu-LX8wKzdHnNTtya6psajU8";
+const SHEETS = {
+  cuentas:  "Cuentas",
+  pagos:    "Pagos",
+  tarjetas: "Tarjetas",
+  historico:"Historico"
+};
+
+/* Construir URL de exportación CSV de Google Sheets */
+function sheetURL(name){
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}&cache=${Date.now()}`;
+}
+
+/* ===============================================================
+   HELPERS
+   =============================================================== */
+const fmt = (n) => {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  const abs = Math.abs(n);
+  const sign = n < 0 ? '-' : '';
+  if (abs >= 1e6) return `${sign}$${(abs/1e6).toFixed(2)}M`;
+  if (abs >= 1e3) return `${sign}$${(abs/1e3).toFixed(0)}K`;
+  return `${sign}$${abs.toFixed(0)}`;
+};
+const fmtFull = (n) => {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
+};
+const fmtDateFull = (d) => {
+  if (!d) return '—';
+  return d.toLocaleDateString('es-AR',{day:'2-digit',month:'long',year:'numeric'});
+};
+const fmtDateShort = (d) => {
+  if (!d) return '—';
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+};
+const fmtTime = (d) => {
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  return `${h}:${m}`;
+};
+
+/* Parsea fecha en DD/MM/YYYY, YYYY-MM-DD, o lo que Google Sheets devuelva */
+function parseDate(s){
+  if (!s) return null;
+  if (s instanceof Date) return s;
+  s = String(s).trim();
+  if (!s) return null;
+  // YYYY-MM-DD
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3], 12);
+  // DD/MM/YYYY
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+  if (m){
+    let y = +m[3]; if (y < 100) y += 2000;
+    return new Date(y, +m[2]-1, +m[1], 12);
+  }
+  return null;
+}
+
+/* Parsea un monto: acepta "1.234,56", "1234.56", "$1.234", número, etc */
+function parseMonto(s){
+  if (s === null || s === undefined || s === '') return null;
+  if (typeof s === 'number') return s;
+  let t = String(s).trim().replace(/[$\s]/g, '');
+  if (t === '' || t === '-') return null;
+  // Decidir separador decimal
+  const lastComma = t.lastIndexOf(',');
+  const lastDot = t.lastIndexOf('.');
+  if (lastComma > lastDot){
+    // Coma decimal (1.234,56)
+    t = t.replace(/\./g,'').replace(',', '.');
+  } else if (lastDot > lastComma){
+    // Punto decimal (1,234.56)
+    t = t.replace(/,/g,'');
+  } else {
+    t = t.replace(/,/g,'');
+  }
+  const n = parseFloat(t);
+  return isNaN(n) ? null : n;
+}
+
+/* Parser CSV simple que respeta comillas */
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (inQuotes){
+      if (c === '"'){
+        if (text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ','){ row.push(field); field = ''; }
+      else if (c === '\n' || c === '\r'){
+        if (field !== '' || row.length){ row.push(field); rows.push(row); row = []; field = ''; }
+        if (c === '\r' && text[i+1] === '\n') i++;
+      }
+      else field += c;
+    }
+  }
+  if (field !== '' || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+/* ===============================================================
+   PROCESAMIENTO DE CADA HOJA
+   =============================================================== */
+function findHeaderRow(rows, expectedHeaders){
+  // Busca la fila que tenga al menos uno de los headers esperados
+  for (let i = 0; i < Math.min(rows.length, 10); i++){
+    const r = rows[i].map(x => String(x).toUpperCase().trim());
+    if (expectedHeaders.some(h => r.includes(h))) return i;
+  }
+  return -1;
+}
+
+function tipoCuenta(nombre, tipoCol){
+  const t = (tipoCol || '').toString().toUpperCase().trim();
+  if (t === 'BANCO' || t === 'EFECTIVO' || t === 'COBRAR' || t === 'DEUDA') return t.toLowerCase();
+  const up = (nombre || '').toString().toUpperCase();
+  if (up.includes('COBRAR') || up.includes('POSNET')) return 'cobrar';
+  if (up.includes('EFECTIVO')) return 'efectivo';
+  if (up.includes('DEUDA') || up.includes('PRESTAMO')) return 'deuda';
+  return 'banco';
+}
+
+function procesarCuentas(rows){
+  const headerIdx = findHeaderRow(rows, ['NOMBRE']);
+  if (headerIdx < 0) return [];
+  const out = [];
+  for (let i = headerIdx + 1; i < rows.length; i++){
+    const r = rows[i];
+    const nombre = (r[0] || '').toString().trim();
+    if (!nombre) continue;
+    const tipo = (r[1] || '').toString().trim();
+    const monto = parseMonto(r[2]);
+    if (monto === null) continue;
+    out.push({ nombre, tipo: tipoCuenta(nombre, tipo), monto });
+  }
+  return out;
+}
+
+function procesarPagos(rows){
+  const headerIdx = findHeaderRow(rows, ['FECHA', 'CONCEPTO']);
+  if (headerIdx < 0) return [];
+  const out = [];
+  for (let i = headerIdx + 1; i < rows.length; i++){
+    const r = rows[i];
+    const fecha = parseDate(r[0]);
+    const concepto = (r[1] || '').toString().trim();
+    const monto = parseMonto(r[2]);
+    if (!fecha || !concepto || monto === null) continue;
+    out.push({ fecha, concepto, monto });
+  }
+  // Ordenar por fecha
+  out.sort((a,b) => a.fecha - b.fecha);
+  return out;
+}
+
+function procesarTarjetas(rows){
+  const headerIdx = findHeaderRow(rows, ['NOMBRE', 'TARJETA']);
+  if (headerIdx < 0) return [];
+  const out = [];
+  for (let i = headerIdx + 1; i < rows.length; i++){
+    const r = rows[i];
+    const nombre = (r[0] || '').toString().trim();
+    const monto = parseMonto(r[1]);
+    if (!nombre || monto === null) continue;
+    const vto = parseDate(r[2]);
+    out.push({ nombre, monto, vto });
+  }
+  return out;
+}
+
+function procesarHistorico(rows){
+  const headerIdx = findHeaderRow(rows, ['FECHA']);
+  if (headerIdx < 0) return [];
+  const out = [];
+  for (let i = headerIdx + 1; i < rows.length; i++){
+    const r = rows[i];
+    const fecha = parseDate(r[0]);
+    const total = parseMonto(r[1]);
+    if (!fecha || total === null) continue;
+    out.push({ fecha, total, notas: (r[2] || '').toString().trim() });
+  }
+  out.sort((a,b) => a.fecha - b.fecha);
+  return out;
+}
+
+/* ===============================================================
+   RENDER
+   =============================================================== */
+function renderError(msg, detalle){
+  document.getElementById('content').innerHTML = `
+    <div class="state error">
+      <h3>No se pudo cargar la planilla</h3>
+      <p>${msg}</p>
+      ${detalle ? `<p style="margin-top:14px;font-size:12px;color:var(--txt-3)">Detalle técnico: <code>${detalle}</code></p>` : ''}
+    </div>
+  `;
+}
+
+function render(data){
+  const { cuentas, pagos, tarjetas, historico } = data;
+  
+  // Calcular total disponible (suma de todas las cuentas)
+  const totalDisp = cuentas.reduce((s,c) => s + c.monto, 0);
+  
+  // Próximos pagos (a partir de hoy)
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const pagosFuturos = pagos.filter(p => p.fecha >= hoy);
+  const proxPago = pagosFuturos[0] || null;
+  
+  // Total a pagar en los próximos 30 días
+  const limite30 = new Date(hoy); limite30.setDate(limite30.getDate()+30);
+  const total30 = pagosFuturos
+    .filter(p => p.fecha <= limite30)
+    .reduce((s,p) => s + p.monto, 0);
+  
+  // Calcular saldos acumulados proyectados
+  let saldoAcum = totalDisp;
+  const pagosConSaldo = pagosFuturos.map(p => {
+    saldoAcum -= p.monto;
+    return { ...p, saldoAcum };
+  });
+  
+  // Saldo mínimo proyectado
+  const saldoMin = pagosConSaldo.length
+    ? Math.min(...pagosConSaldo.map(p => p.saldoAcum), totalDisp)
+    : totalDisp;
+  
+  // ----------- HTML ----------
+  let html = '';
+  
+  // KPIs
+  const tdClass = totalDisp < 0 ? 'neg' : 'pos';
+  const minClass = saldoMin < 0 ? 'neg' : 'pos';
+  html += `
+    <section class="kpis stagger">
+      <div class="kpi featured">
+        <div class="kpi-label">Total disponible hoy</div>
+        <div class="kpi-value ${tdClass}">${fmtFull(totalDisp)}</div>
+        <div class="kpi-sub">${cuentas.length} cuentas · suma de todo lo disponible</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Próximo pago</div>
+        <div class="kpi-value">${proxPago ? fmt(proxPago.monto) : '—'}</div>
+        <div class="kpi-sub">${proxPago ? `<strong>${proxPago.concepto}</strong> · ${fmtDateFull(proxPago.fecha)}` : 'Sin pagos pendientes'}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">A pagar próx. 30 días</div>
+        <div class="kpi-value">${fmt(total30)}</div>
+        <div class="kpi-sub">${pagosFuturos.filter(p => p.fecha <= limite30).length} compromisos hasta <strong>${fmtDateShort(limite30)}</strong></div>
+      </div>
+    </section>
+    <section class="kpis stagger" style="grid-template-columns:1fr 1fr 1fr;margin-top:-18px">
+      <div class="kpi">
+        <div class="kpi-label">Saldo mínimo proyectado</div>
+        <div class="kpi-value ${minClass}">${fmt(saldoMin)}</div>
+        <div class="kpi-sub">${saldoMin < 0 ? `<strong style="color:var(--neg)">Necesidad de fondeo</strong>` : 'En cobertura'}</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Tarjetas a vencer</div>
+        <div class="kpi-value">${tarjetas.length}</div>
+        <div class="kpi-sub">Suma: <strong>${fmt(tarjetas.reduce((s,t) => s+t.monto, 0))}</strong></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Cortes guardados</div>
+        <div class="kpi-value">${historico.length}</div>
+        <div class="kpi-sub">Histórico desde <strong>${historico.length ? fmtDateShort(historico[0].fecha) : '—'}</strong></div>
+      </div>
+    </section>
+  `;
+  
+  // CUENTAS
+  html += `
+    <section class="section">
+      <div class="section-hdr">
+        <h2>Cuentas y <em>disponibilidades</em></h2>
+        <span class="meta">${cuentas.length} cuentas</span>
+      </div>
+      <div class="cuentas-grid stagger">
+        ${cuentas.length === 0 ? '<div class="empty">Sin cuentas cargadas</div>' :
+          cuentas.map(c => {
+            const cls = c.monto > 0 ? 'pos' : c.monto < 0 ? 'neg' : 'zero';
+            return `<div class="cuenta tipo-${c.tipo}">
+              <div class="cuenta-nombre">${c.nombre}</div>
+              <div class="cuenta-monto ${cls}">${fmtFull(c.monto)}</div>
+            </div>`;
+          }).join('')
+        }
+      </div>
+    </section>
+  `;
+  
+  // PAGOS
+  html += `
+    <section class="section">
+      <div class="section-hdr">
+        <h2>Cronograma de <em>pagos</em></h2>
+        <span class="meta">${pagosConSaldo.length} compromisos</span>
+      </div>
+      <div class="tabla-wrap fade-in">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:120px">Fecha</th>
+              <th>Concepto</th>
+              <th class="num" style="width:140px">Monto</th>
+              <th class="num" style="width:180px">Saldo proyectado</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${pagosConSaldo.length === 0 ? '<tr><td colspan="4" class="empty">Sin pagos próximos cargados</td></tr>' :
+              (() => {
+                let lastMonth = null;
+                return pagosConSaldo.map(p => {
+                  const monthKey = p.fecha.toLocaleDateString('es-AR',{month:'long',year:'numeric'});
+                  let divider = '';
+                  if (monthKey !== lastMonth){
+                    divider = `<tr class="divider"><td colspan="4">${monthKey}</td></tr>`;
+                    lastMonth = monthKey;
+                  }
+                  const saldoCls = p.saldoAcum < 0 ? 'neg' : 'pos';
+                  const alertCls = p.saldoAcum < 0 ? 'alert' : '';
+                  return `${divider}<tr class="${alertCls}">
+                    <td class="fecha">${fmtDateFull(p.fecha)}</td>
+                    <td class="concepto">${p.concepto}</td>
+                    <td class="num monto">−${fmtFull(p.monto).replace('-','')}</td>
+                    <td class="num saldo ${saldoCls}">${fmtFull(p.saldoAcum)}</td>
+                  </tr>`;
+                }).join('');
+              })()
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `;
+  
+  // TARJETAS
+  if (tarjetas.length > 0){
+    html += `
+      <section class="section">
+        <div class="section-hdr">
+          <h2>Tarjetas <em>a vencer</em></h2>
+          <span class="meta">Próximos cierres</span>
+        </div>
+        <div class="tarjetas-grid stagger">
+          ${tarjetas.map(t => `
+            <div class="tarjeta-card">
+              <div class="tarjeta-tipo">${t.nombre}</div>
+              <div class="tarjeta-monto">${fmtFull(t.monto)}</div>
+              ${t.vto ? `<div class="tarjeta-vto">Vence: ${fmtDateFull(t.vto)}</div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }
+  
+  // HISTÓRICO (gráfico)
+  if (historico.length > 1){
+    html += `
+      <section class="section">
+        <div class="section-hdr">
+          <h2>Evolución del <em>disponible</em></h2>
+          <span class="meta">${historico.length} cortes guardados</span>
+        </div>
+        <div class="chart-wrap fade-in">
+          <canvas class="chart-canvas" id="chart-evolucion"></canvas>
+        </div>
+      </section>
+    `;
+  }
+  
+  document.getElementById('content').innerHTML = html;
+  
+  // Render del gráfico si corresponde
+  if (historico.length > 1){
+    requestAnimationFrame(() => renderChart(historico, totalDisp));
+  }
+}
+
+/* ===============================================================
+   GRÁFICO custom (sin libs)
+   =============================================================== */
+function renderChart(historico, totalActual){
+  const canvas = document.getElementById('chart-evolucion');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0,0,W,H);
+  
+  const padding = {top:24,right:30,bottom:42,left:64};
+  const innerW = W - padding.left - padding.right;
+  const innerH = H - padding.top - padding.bottom;
+  
+  // Agregar el punto actual al final del histórico
+  const hoy = new Date(); hoy.setHours(12,0,0,0);
+  const ultimoCorte = historico[historico.length-1];
+  let puntos = historico.slice();
+  // Solo agregar "hoy" si es diferente al último corte
+  if (!ultimoCorte || ultimoCorte.fecha.toDateString() !== hoy.toDateString()){
+    puntos.push({ fecha: hoy, total: totalActual, esActual: true });
+  } else {
+    puntos[puntos.length-1] = { ...ultimoCorte, esActual: true };
+  }
+  
+  const values = puntos.map(p => p.total);
+  const minV = Math.min(...values, 0);
+  const maxV = Math.max(...values, 0);
+  const range = (maxV - minV) || 1;
+  
+  // Grid horizontal
+  ctx.strokeStyle = '#262a33';
+  ctx.lineWidth = 1;
+  ctx.font = '10px "JetBrains Mono", monospace';
+  ctx.fillStyle = '#6b7280';
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'middle';
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i++){
+    const v = minV + (range * i / ticks);
+    const y = padding.top + innerH - (innerH * i / ticks);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(padding.left + innerW, y);
+    ctx.stroke();
+    const label = Math.abs(v) >= 1e6 ? `${(v/1e6).toFixed(1)}M` : `${(v/1e3).toFixed(0)}K`;
+    ctx.fillText(label, padding.left - 8, y);
+  }
+  
+  // Línea cero
+  if (minV < 0 && maxV > 0){
+    const yZero = padding.top + innerH - (innerH * (0 - minV) / range);
+    ctx.strokeStyle = '#f87171';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, yZero);
+    ctx.lineTo(padding.left + innerW, yZero);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  
+  const xStep = innerW / Math.max(1, puntos.length - 1);
+  
+  // Área
+  const grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + innerH);
+  grad.addColorStop(0, 'rgba(212,165,116,0.25)');
+  grad.addColorStop(1, 'rgba(212,165,116,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  const yZeroForArea = padding.top + innerH - (innerH * (0 - minV) / range);
+  ctx.moveTo(padding.left, yZeroForArea);
+  puntos.forEach((p,i) => {
+    const x = padding.left + i*xStep;
+    const y = padding.top + innerH - (innerH * (p.total - minV) / range);
+    ctx.lineTo(x, y);
+  });
+  ctx.lineTo(padding.left + (puntos.length-1)*xStep, yZeroForArea);
+  ctx.closePath();
+  ctx.fill();
+  
+  // Línea
+  ctx.strokeStyle = '#d4a574';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  puntos.forEach((p,i) => {
+    const x = padding.left + i*xStep;
+    const y = padding.top + innerH - (innerH * (p.total - minV) / range);
+    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  
+  // Puntos
+  puntos.forEach((p,i) => {
+    const x = padding.left + i*xStep;
+    const y = padding.top + innerH - (innerH * (p.total - minV) / range);
+    const isLast = p.esActual;
+    const isNeg = p.total < 0;
+    ctx.fillStyle = isLast ? '#d4a574' : (isNeg ? '#f87171' : '#4ade80');
+    ctx.beginPath();
+    ctx.arc(x, y, isLast ? 6 : 3, 0, 2*Math.PI);
+    ctx.fill();
+    if (isLast){
+      ctx.strokeStyle = '#0c0d10';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+  });
+  
+  // Eje X (fechas)
+  ctx.fillStyle = '#6b7280';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'top';
+  const xLabelStep = Math.max(1, Math.ceil(puntos.length / 8));
+  puntos.forEach((p,i) => {
+    if (i % xLabelStep !== 0 && i !== puntos.length-1) return;
+    const x = padding.left + i*xStep;
+    const label = fmtDateShort(p.fecha);
+    ctx.fillText(label, x, padding.top + innerH + 8);
+  });
+}
+
+/* ===============================================================
+   CARGA DE DATOS
+   =============================================================== */
+async function loadData(){
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.classList.add('spinning');
+  
+  // Verificar config
+  if (SHEET_ID === "REEMPLAZAR_AQUI_SHEET_ID"){
+    renderError(
+      "El archivo está sin configurar. Hay que editar <code>index.html</code> y reemplazar <code>REEMPLAZAR_AQUI_SHEET_ID</code> por el ID real de tu Google Sheets.",
+      "Mirá el README para los pasos."
+    );
+    if (btn) btn.classList.remove('spinning');
+    return;
+  }
+  
+  try {
+    const [cuentasCSV, pagosCSV, tarjetasCSV, historicoCSV] = await Promise.all([
+      fetch(sheetURL(SHEETS.cuentas)).then(r => r.ok ? r.text() : Promise.reject('cuentas')),
+      fetch(sheetURL(SHEETS.pagos)).then(r => r.ok ? r.text() : Promise.reject('pagos')),
+      fetch(sheetURL(SHEETS.tarjetas)).then(r => r.ok ? r.text() : Promise.reject('tarjetas')),
+      fetch(sheetURL(SHEETS.historico)).then(r => r.ok ? r.text() : Promise.reject('historico'))
+    ]);
+    
+    const data = {
+      cuentas: procesarCuentas(parseCSV(cuentasCSV)),
+      pagos: procesarPagos(parseCSV(pagosCSV)),
+      tarjetas: procesarTarjetas(parseCSV(tarjetasCSV)),
+      historico: procesarHistorico(parseCSV(historicoCSV))
+    };
+    
+    render(data);
+    
+    const ahora = new Date();
+    document.getElementById('meta-actualizado').textContent = fmtTime(ahora);
+  } catch (e){
+    renderError(
+      "No se pudieron leer las hojas del Google Sheets. Verificá que la planilla esté compartida como <strong>Cualquiera con el enlace - puede ver</strong>, y que los nombres de las hojas sean exactamente: <code>Cuentas</code>, <code>Pagos</code>, <code>Tarjetas</code> y <code>Historico</code>.",
+      String(e)
+    );
+  }
+  if (btn) btn.classList.remove('spinning');
+}
+
+document.getElementById('meta-hoy').textContent = fmtDateFull(new Date());
+loadData();
+
+window.addEventListener('resize', () => {
+  if (document.getElementById('chart-evolucion')) {
+    // Re-renderizar el gráfico si está visible
+    loadData();
+  }
+});
+</script>
+</body>
+</html>
